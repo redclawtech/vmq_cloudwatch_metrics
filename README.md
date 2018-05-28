@@ -63,5 +63,5 @@ vmq_cloudwatch_metrics.aws_region = "eu-west-1"
 
 ## TODO
 
-[] Add tests.
-[] Add CI using Travis.
+- [ ] Add tests.
+- [ ] Add CI using Travis.
