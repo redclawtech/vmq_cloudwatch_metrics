@@ -1,0 +1,26 @@
+{"1.1.0",
+[{<<"base16">>,{pkg,<<"base16">>,<<"1.0.0">>},1},
+ {<<"clique">>,{pkg,<<"clique">>,<<"3.0.1">>},0},
+ {<<"cuttlefish">>,
+  {git,"https://github.com/kyorai/cuttlefish.git",
+       {ref,"649cda2828ef939126a20faa5d0ee0a2ab69f9a6"}},
+  0},
+ {<<"eini">>,{pkg,<<"eini">>,<<"1.2.4">>},1},
+ {<<"erlcloud">>,{pkg,<<"erlcloud">>,<<"3.1.7">>},0},
+ {<<"getopt">>,{pkg,<<"getopt">>,<<"0.8.2">>},1},
+ {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.9">>},1},
+ {<<"jsx">>,{pkg,<<"jsx">>,<<"2.8.0">>},1},
+ {<<"lager">>,{pkg,<<"lager">>,<<"3.6.1">>},0},
+ {<<"lhttpc">>,{pkg,<<"lhttpc">>,<<"1.5.4">>},1}]}.
+[
+{pkg_hash,[
+ {<<"base16">>, <<"283644E2B21BD5915ACB7178BED7851FB07C6E5749B8FAD68A53C501092176D9">>},
+ {<<"clique">>, <<"8C88F2349C7C550D3A2F44E63C30128782B724B0987084370A120700C3EA7564">>},
+ {<<"eini">>, <<"ABD64A0533398A6D714D21219BB85F2D41FDB42665AC4080939B7BFA8E55F386">>},
+ {<<"erlcloud">>, <<"482ABF46C7AFC023557022C0040A681063368D9DF4E4EB8A73A5B7CD17A6C47E">>},
+ {<<"getopt">>, <<"B17556DB683000BA50370B16C0619DF1337E7AF7ECBF7D64FBF8D1D6BCE3109B">>},
+ {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>},
+ {<<"jsx">>, <<"749BEC6D205C694AE1786D62CEA6CC45A390437E24835FD16D12D74F07097727">>},
+ {<<"lager">>, <<"9D29C5FF7F926D25ECD9899990867C9152DCF34EEE65BAC8EC0DFC0D16A26E0C">>},
+ {<<"lhttpc">>, <<"405E4F460D67FE8F43F0E6D64E4D168F8A5CFF3AD34D78114688753DAA80FBEB">>}]}
+].
