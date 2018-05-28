@@ -1,0 +1,28 @@
+{application, vmq_cloudwatch_metrics,
+ [{description, "VerneMQ plugin to report node metrics to AWS CloudWatch"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, { vmq_cloudwatch_metrics_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    sasl,
+    lager,
+    clique,
+    xmerl,
+    erlcloud
+   ]},
+   {env,[
+     {cloudwatch_enabled, false},
+     {interval, 2000},
+     {namespace, "VerneMQ"},
+     {aws_access_key_id, ""},
+     {aws_secret_access_key, ""},
+     {aws_region, "us-east-1"}
+  ]},
+  {modules, []},
+  {maintainers, ["Dairon Medina Caro"]},
+  {licenses, ["Apache2"]},
+  {links,[{"Github",
+            "https://github.com/codeadict/vmq_cloudwatch_metrics"}]}]}.
+ ]}.

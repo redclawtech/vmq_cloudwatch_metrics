@@ -1,0 +1,45 @@
+%% @doc Enable the AWS CloudWatch Reporter.
+{mapping, "vmq_cloudwatch_metrics.cloudwatch_enabled", "vmq_cloudwatch_metrics.cloudwatch_enabled", [
+                                                              {default, off},
+                                                              {datatype, flag}
+]}.
+
+
+%% @doc the interval we push metrics to AWS Cloudwatch in milliseconds.
+{mapping, "vmq_cloudwatch_metrics.interval", "vmq_cloudwatch_metrics.interval", [
+                                                                  {default, 20000},
+                                                                  {datatype, integer}
+]}.
+
+
+%% @doc set the namespace for the metric data. 
+%% Namespaces that begin with "AWS/" are reserved for use by Amazon Web Services products.
+{mapping, "vmq_cloudwatch_metrics.namespace", "vmq_cloudwatch_metrics.namespace", [
+                                                            {commented, "VerneMQ/Dev"},
+                                                            {default, ""},
+                                                            {datatype, string}
+]}.
+
+
+%% @doc Set the AWS Access Key ID.
+{mapping, "vmq_cloudwatch_metrics.aws_access_key_id", "vmq_cloudwatch_metrics.aws_access_key_id", [
+                                                              {default, ""},
+                                                              {datatype, string}
+                                                            ]}.
+
+%% @doc Set the AWS Secret Access Key.
+{mapping, "vmq_cloudwatch_metrics.aws_secret_access_key", "vmq_cloudwatch_metrics.aws_secret_access_key", [
+                                                              {default, ""},
+                                                              {datatype, string}
+                                                            ]}.
+
+
+%% @doc Set the AWS Region.
+{mapping, "vmq_cloudwatch_metrics.aws_region", "vmq_cloudwatch_metrics.aws_region", [
+                                                              {default, "us-east-1"},
+                                                              {datatype, string}
+                                                            ]}.
+
+
+
+
