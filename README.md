@@ -60,3 +60,8 @@ vmq_cloudwatch_metrics.aws_region = "eu-west-1"
 ```
 
 *Tip:* Configuration parameters can also be changed at runtime using the `vmq-admin` script.
+
+## TODO
+
+[] Add tests.
+[] Add CI using Travis.
