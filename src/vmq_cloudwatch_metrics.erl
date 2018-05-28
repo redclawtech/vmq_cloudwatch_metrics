@@ -106,7 +106,7 @@ handle_info(timeout, State = #state{namespace = Namespace, config = Config}) ->
     {ok, Enabled} = application:get_env(?APP, cloudwatch_enabled),
     case Enabled of
         true ->
-            lager:debug("Sending metrics to cloudwatch Namespace: ~p", [Namespace]),
+            lager:debug("Sending metrics to cloudwatch."),
             Interval = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
             ServerMetrics = vmq_metrics:metrics(),
             %% Metrics come in chunks of 20 items due to AWS limitation.
