@@ -205,9 +205,27 @@ split(L, N) ->
 -spec unit({term(), term()}) -> binary().
 unit({counter, cluster_bytes_dropped}) ->
     "Bytes";
+unit({counter, cluster_bytes_sent}) ->
+    "Bytes";
+unit({counter, cluster_bytes_received}) ->
+    "Bytes";
+unit({counter, bytes_sent}) ->
+    "Bytes";
+unit({counter, bytes_received}) ->
+    "Bytes";
+unit({counter, system_io_in}) ->
+    "Bytes";
+unit({counter, system_io_out}) ->
+    "Bytes";
+unit({counter, router_memory}) ->
+    "Bytes";
+unit({counter, retain_memory}) ->
+    "Bytes";
 unit({counter, system_wallclock}) ->
     "Milliseconds";
 unit({gauge, system_utilization}) ->
+    "Percent";
+unit({gauge, <<"system_utilization_scheduler_", _Number/binary>>}) ->
     "Percent";
 unit({_Type, _Metric}) ->
     "Count".
