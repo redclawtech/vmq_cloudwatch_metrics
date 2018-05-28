@@ -127,7 +127,9 @@ handle_info(timeout, State = #state{namespace = Namespace, config = Config}) ->
             Metrics = build_metric_datum(ServerMetrics, []),
             lists:foreach(
                 fun(MetricsChunk) ->
-                    erlcloud_mon:put_metric_data(Namespace, MetricsChunk, Config)
+                    erlcloud_mon:put_metric_data(Namespace,
+                                                 MetricsChunk,
+                                                 Config)
                 end, Metrics),
             {noreply, State, Interval};
         false ->
@@ -173,21 +175,25 @@ code_change(_OldVsn, State, _Extra) ->
 %% @private
 %% @doc
 %% Builds a list of CloudWatch `MetricDatum` objects from VerneMQ metrics.
-%% https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html
+%% https://docs.aws.amazon.com/AmazonCloudWatch/latest/
+%% APIReference/API_MetricDatum.html
 %% @end
 %%--------------------------------------------------------------------
 build_metric_datum([{Type, Name, Val} | Metrics], Acc) ->
         Metric = #metric_datum{
             metric_name = atom_to_list(Name),
-            dimensions  = [#dimension{name = "node", value = atom_to_list(node())}],
+            dimensions  = [
+                #dimension{name = "node", value = atom_to_list(node())}
+            ],
             unit = unit({Type, Name}),
             value = value(Val)
         },
         build_metric_datum(Metrics, [Metric|Acc]);
 build_metric_datum([], Acc) ->
-    %% Split the metrics list in sublists due to AWS CloudWatch `PutMetricData` limitation
-    %% of 20 metrics per call. 
-    %% See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricData.html
+    %% Split the metrics in sublists due to CloudWatch `PutMetricData`
+    %% limitation of 20 metrics per call.
+    %% https://docs.aws.amazon.com/AmazonCloudWatch/latest/
+    %% APIReference/API_PutMetricData.html
     split(Acc, 20).
 
 
