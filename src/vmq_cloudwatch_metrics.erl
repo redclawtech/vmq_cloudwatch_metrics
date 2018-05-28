@@ -21,7 +21,7 @@
 -define(APP, vmq_cloudwatch_metrics).
 
 %% The default interval used to send the data to AWS Cloudwatch.
--define(DEFAULT_INTERVAL, 20000).
+-define(DEFAULT_INTERVAL, 60000).
 
 -record(state, {
     namespace  :: string(),    %% The Cloudwatch Metrics namespace.

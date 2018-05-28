@@ -14,7 +14,7 @@
    ]},
    {env,[
      {cloudwatch_enabled, false},
-     {interval, 20000},
+     {interval, 60000},
      {namespace, "VerneMQ"},
      {aws_access_key_id, ""},
      {aws_secret_access_key, ""},
@@ -24,5 +24,5 @@
   {maintainers, ["Dairon Medina Caro"]},
   {licenses, ["Apache2"]},
   {links,[{"Github",
-            "https://github.com/codeadict/vmq_cloudwatch_metrics"}]}]}.
+            "https://github.com/codeadict/vmq_cloudwatch_metrics"}]}
  ]}.
