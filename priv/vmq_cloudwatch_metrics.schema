@@ -15,7 +15,7 @@
 %% @doc set the namespace for the metric data. 
 %% Namespaces that begin with "AWS/" are reserved for use by Amazon Web Services products.
 {mapping, "vmq_cloudwatch_metrics.namespace", "vmq_cloudwatch_metrics.namespace", [
-                                                            {commented, "VerneMQ/Dev"},
+                                                            {commented, "VerneMQ"},
                                                             {default, ""},
                                                             {datatype, string}
 ]}.
