@@ -28,7 +28,8 @@ register_config() ->
      "vmq_cloudwatch_metrics.namespace",
      "vmq_cloudwatch_metrics.aws_access_key_id",
      "vmq_cloudwatch_metrics.aws_secret_access_key",
-     "vmq_cloudwatch_metrics.aws_region"
+     "vmq_cloudwatch_metrics.aws_region",
+     "vmq_cloudwatch_metrics.aws_profile"
     ],
     [clique:register_config([Key],
         fun register_config_callback/3) || Key <- ConfigKeys

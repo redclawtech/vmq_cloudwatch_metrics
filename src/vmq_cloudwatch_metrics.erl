@@ -69,13 +69,24 @@ start_link() ->
     {ok, State :: state()} | {ok, State :: state(), timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
+    {ok, Profile} = application:get_env(?APP, aws_profile, "default"),
+    {ok, Region} = application:get_env(?APP, aws_region),
     {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
     {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
-    {ok, Region} = application:get_env(?APP, aws_region),
     {ok, Namespace} = application:get_env(?APP, namespace),
-    Host = "monitoring." ++ Region ++ ".amazonaws.com",
-    Config = erlcloud_mon:new(AccessKeyID, SecretAccessKey, Host),
-    {ok, #state{namespace = Namespace, config = Config}, 0}.
+    AWSConfig = case has_valid_credentials(AccessKeyID, SecretAccessKey) of
+        true ->
+            lager:info("AWS credentials configured"),
+            Conf = erlcloud_mon:new(AccessKeyID, SecretAccessKey),
+            Conf;
+        false ->
+           %% This will attempt to fetch the AWS access key and secret automatically.
+           lager:info("AWS credentials not configured, attempting to get them automatically..."),
+           {ok, Conf} = erlcloud_aws:auto_config([{profile, Profile}]),
+           Conf
+     end,
+    CloudWatchConfig = erlcloud_aws:service_config(<<"monitoring">>, Region, AWSConfig),
+    {ok, #state{namespace = Namespace, config = CloudWatchConfig}, 0}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -260,3 +271,17 @@ unit({_Type, _Metric}) ->
 value(V) when is_integer(V) -> float(V);
 value(V) when is_float(V)   -> V;
 value(_) -> 0.0.
+
+has_valid_credentials(undefined, _) ->
+    false;
+has_valid_credentials(_, undefined) ->
+    false;
+has_valid_credentials(undefined, undefined) ->
+    false;
+has_valid_credentials(AccessKeyID, SecretAccessKey) when
+    is_list(AccessKeyID), is_list(SecretAccessKey) ->
+        case {AccessKeyID, SecretAccessKey} of
+            {"", ""} -> false;
+            _ -> true
+        end.
+
