@@ -74,7 +74,7 @@ init([]) ->
     {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
     {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
     {ok, Namespace} = application:get_env(?APP, namespace),
-    AWSConfig = case has_valid_credentials(AccessKeyID, SecretAccessKey) of
+    AWSConfig = case has_config_credentials(AccessKeyID, SecretAccessKey) of
         true ->
             lager:info("AWS credentials configured"),
             Conf = erlcloud_mon:new(AccessKeyID, SecretAccessKey),
@@ -272,16 +272,24 @@ value(V) when is_integer(V) -> float(V);
 value(V) when is_float(V)   -> V;
 value(_) -> 0.0.
 
-has_valid_credentials(undefined, _) ->
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Determines whether or not AWS Credentials are provided in the
+%% VerneMQ config.
+%% @end
+%%--------------------------------------------------------------------
+-spec has_config_credentials(iodata(), iodata()) -> boolean().
+has_config_credentials(undefined, _) ->
     false;
-has_valid_credentials(_, undefined) ->
+has_config_credentials(_, undefined) ->
     false;
-has_valid_credentials(undefined, undefined) ->
+has_config_credentials(undefined, undefined) ->
     false;
-has_valid_credentials(AccessKeyID, SecretAccessKey) when
-    is_list(AccessKeyID), is_list(SecretAccessKey) ->
-        case {AccessKeyID, SecretAccessKey} of
-            {"", ""} -> false;
-            _ -> true
-        end.
+has_config_credentials(AccessKeyID, SecretAccessKey) when
+is_list(AccessKeyID), is_list(SecretAccessKey) ->
+    case {AccessKeyID, SecretAccessKey} of
+        {"", ""} -> false;
+        _ -> true
+    end.
 
