@@ -41,7 +41,7 @@
                                                             ]}.
 
 %% @doc Set the AWS Profile.
-{mapping, "vmq_cloudwatch_metrics.aws_region", "vmq_cloudwatch_metrics.aws_profile", [
+{mapping, "vmq_cloudwatch_metrics.aws_profile", "vmq_cloudwatch_metrics.aws_profile", [
                                                               {default, "default"},
                                                               {datatype, string}
                                                             ]}.
