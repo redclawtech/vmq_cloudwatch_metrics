@@ -69,7 +69,7 @@ start_link() ->
     {ok, State :: state()} | {ok, State :: state(), timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
-    {ok, _Profile} = application:get_env(?APP, aws_profile),
+    {ok, Profile} = application:get_env(?APP, aws_profile, "default"),
     {ok, Region} = application:get_env(?APP, aws_region),
     {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
     {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
@@ -82,7 +82,7 @@ init([]) ->
         false ->
            %% This will attempt to fetch the AWS access key and secret automatically.
            lager:info("AWS credentials not configured, attempting to get them automatically..."),
-           {ok, Conf} = erlcloud_aws:auto_config([{profile, "default"}]),
+           {ok, Conf} = erlcloud_aws:auto_config([{profile, Profile}]),
            Conf
      end,
     CloudWatchConfig = erlcloud_aws:service_config(<<"monitoring">>, Region, AWSConfig),
