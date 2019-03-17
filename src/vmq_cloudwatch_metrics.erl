@@ -69,7 +69,7 @@ start_link() ->
     {ok, State :: state()} | {ok, State :: state(), timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
-    {ok, Profile} = application:get_env(?APP, aws_profile, "default"),
+    {ok, Profile} = application:get_env(?APP, aws_profile),
     {ok, Region} = application:get_env(?APP, aws_region),
     {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
     {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
