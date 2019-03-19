@@ -16,7 +16,6 @@
 
 -behaviour(gen_server).
 
--include_lib("vmq_metrics.hrl").
 -include_lib("erlcloud/include/erlcloud_aws.hrl").
 -include_lib("erlcloud/include/erlcloud_mon.hrl").
 
