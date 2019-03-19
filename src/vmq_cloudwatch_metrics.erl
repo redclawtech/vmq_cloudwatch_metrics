@@ -38,8 +38,9 @@
 -define(DEFAULT_INTERVAL, 60000).
 
 -record(state, {
-    namespace  :: string(),    %% The Cloudwatch Metrics namespace.
-    config     :: aws_config() %% AWS config.
+    namespace  :: string(),     %% The Cloudwatch Metrics namespace.
+    config     :: aws_config(), %% AWS config.
+    interval   :: non_neg_integer()
 }).
 
 -type state() :: #state{}.
@@ -69,24 +70,35 @@ start_link() ->
     {ok, State :: state()} | {ok, State :: state(), timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
-    {ok, Profile} = application:get_env(?APP, aws_profile),
-    {ok, Region} = application:get_env(?APP, aws_region),
-    {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
-    {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
-    {ok, Namespace} = application:get_env(?APP, namespace),
-    AWSConfig = case has_config_credentials(AccessKeyID, SecretAccessKey) of
+    {ok, Enabled} = application:get_env(?APP, cloudwatch_enabled),
+    case Enabled of
         true ->
-            lager:info("AWS credentials configured"),
-            Conf = erlcloud_mon:new(AccessKeyID, SecretAccessKey),
-            Conf;
+            Interval = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
+            {ok, Profile} = application:get_env(?APP, aws_profile),
+            {ok, Region} = application:get_env(?APP, aws_region),
+            {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
+            {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
+            {ok, Namespace} = application:get_env(?APP, namespace),
+            AWSConfig = case has_config_credentials(AccessKeyID, SecretAccessKey) of
+                true ->
+                    lager:info("AWS credentials configured"),
+                    Conf = erlcloud_mon:new(AccessKeyID, SecretAccessKey),
+                    Conf;
+                false ->
+                %% This will attempt to fetch the AWS access key and secret automatically.
+                lager:info("AWS credentials not configured, attempting to get them automatically..."),
+                {ok, Conf} = erlcloud_aws:auto_config([{profile, Profile}]),
+                Conf
+            end,
+            lager:info("The AWS config is: ~p", AWSConfig),
+            CloudWatchConfig = erlcloud_aws:service_config(<<"monitoring">>, Region, AWSConfig),
+            schedule_report(Interval),
+            {ok, #state{namespace = Namespace,
+                        config = CloudWatchConfig,
+                        interval = Interval}};
         false ->
-           %% This will attempt to fetch the AWS access key and secret automatically.
-           lager:info("AWS credentials not configured, attempting to get them automatically..."),
-           {ok, Conf} = erlcloud_aws:auto_config([{profile, Profile}]),
-           Conf
-     end,
-    CloudWatchConfig = erlcloud_aws:service_config(<<"monitoring">>, Region, AWSConfig),
-    {ok, #state{namespace = Namespace, config = CloudWatchConfig}, 0}.
+            {ok, #state{}}
+    end.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -127,27 +139,18 @@ handle_cast(_Msg, State) ->
 %% Handling all non call/cast messages
 %% @end
 %%--------------------------------------------------------------------
-handle_info(timeout, State = #state{namespace = Namespace, config = Config}) ->
-    {ok, Enabled} = application:get_env(?APP, cloudwatch_enabled),
-    case Enabled of
-        true ->
-            lager:debug("Sending metrics to cloudwatch."),
-            Interval = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
-            ServerMetrics = vmq_metrics:metrics(),
-            %% Metrics come in chunks of 20 items due to AWS limitation.
-            Metrics = build_metric_datum(ServerMetrics, []),
-            lists:foreach(
-                fun(MetricsChunk) ->
-                    erlcloud_mon:put_metric_data(Namespace,
-                                                 MetricsChunk,
-                                                 Config)
-                end, Metrics),
-            {noreply, State, Interval};
-        false ->
-            %% Cloudwatch reporting not enabled
-            %% Retry in 5 seconds.
-            {noreply, State, 5000}
-    end.
+handle_info(report, State = #state{namespace = Namespace,
+                                   config = Config, interval = Interval}) ->
+    lager:debug("Sending metrics to cloudwatch."),
+    ServerMetrics = vmq_metrics:metrics(),
+    %% Metrics come in chunks of 20 items due to AWS limitation.
+    Metrics = build_metric_datum(ServerMetrics, []),
+    lists:foreach(
+        fun(Chunk) ->
+            erlcloud_mon:put_metric_data(Namespace, Chunk, Config)
+        end, Metrics),
+    schedule_report(Interval),
+    {noreply, State}.
 
 
 %%--------------------------------------------------------------------
@@ -293,3 +296,6 @@ is_list(AccessKeyID), is_list(SecretAccessKey) ->
         _ -> true
     end.
 
+-spec schedule_report(non_neg_integer()) -> reference().
+schedule_report(Interval) ->
+    erlang:send_after(Interval, self(), report).
