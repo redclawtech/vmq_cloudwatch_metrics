@@ -16,6 +16,7 @@
 
 -behaviour(gen_server).
 
+-include_lib("vmq_metrics.hrl").
 -include_lib("erlcloud/include/erlcloud_aws.hrl").
 -include_lib("erlcloud/include/erlcloud_mon.hrl").
 
@@ -142,7 +143,7 @@ handle_cast(_Msg, State) ->
 handle_info(report, State = #state{namespace = Namespace,
                                    config = Config, interval = Interval}) ->
     lager:debug("Sending metrics to cloudwatch."),
-    ServerMetrics = vmq_metrics:metrics(),
+    ServerMetrics = vmq_metrics:metrics(#{aggregate => false}),
     %% Metrics come in chunks of 20 items due to AWS limitation.
     Metrics = build_metric_datum(ServerMetrics, []),
     lists:foreach(
@@ -193,7 +194,7 @@ code_change(_OldVsn, State, _Extra) ->
 %% APIReference/API_MetricDatum.html
 %% @end
 %%--------------------------------------------------------------------
-build_metric_datum([{Type, Name, Val} | Metrics], Acc) ->
+build_metric_datum([{#metric_def{type=Type, name=Name}, Val} | Metrics], Acc) ->
         Metric = #metric_datum{
             metric_name = atom_to_list(Name),
             dimensions  = [
