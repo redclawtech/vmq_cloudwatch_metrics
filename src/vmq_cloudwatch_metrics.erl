@@ -97,7 +97,7 @@ init([]) ->
                 {ok, Conf} = erlcloud_aws:auto_config([{profile, Profile}]),
                 Conf
             end,
-            lager:info("The AWS config is: ~p", AWSConfig),
+            lager:info("The AWS config is: ~p", [AWSConfig]),
             CloudWatchConfig = erlcloud_aws:service_config(<<"monitoring">>, Region, AWSConfig),
             schedule_report(Interval),
             {ok, #state{namespace = Namespace,
