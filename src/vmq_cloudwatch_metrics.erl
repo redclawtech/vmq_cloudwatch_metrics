@@ -30,8 +30,6 @@
          terminate/2,
          code_change/3]).
 
--define(SERVER, ?MODULE).
-
 -define(APP, vmq_cloudwatch_metrics).
 
 %% The default interval used to send the data to AWS Cloudwatch.
@@ -59,7 +57,7 @@
 %%--------------------------------------------------------------------
 -spec start_link() -> ignore | {error, Reason :: term()} | {'ok', pid()}.
 start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 
 %%%===================================================================
@@ -80,7 +78,7 @@ init([]) ->
     {ok, Enabled} = application:get_env(?APP, cloudwatch_enabled),
     case Enabled of
         true ->
-            {ok, Interval} = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
+            Interval = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
             {ok, Region} = application:get_env(?APP, aws_region),
             {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
             {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
