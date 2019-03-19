@@ -38,6 +38,13 @@
 %% The default interval used to send the data to AWS Cloudwatch.
 -define(DEFAULT_INTERVAL, 60000).
 
+-record(metric_def,
+        {type        :: atom(),
+         labels      :: [{atom(), string()}],
+         id          :: atom() | {atom(), non_neg_integer() | atom()},
+         name        :: atom(),
+         description :: undefined | binary()}).
+
 -record(state, {
     namespace  :: string(),     %% The Cloudwatch Metrics namespace.
     config     :: aws_config(), %% AWS config.
