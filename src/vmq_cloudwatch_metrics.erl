@@ -80,12 +80,12 @@ init([]) ->
     {ok, Enabled} = application:get_env(?APP, cloudwatch_enabled),
     case Enabled of
         true ->
-            Interval = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
-            {ok, Profile} = application:get_env(?APP, aws_profile),
+            {ok, Interval} = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
             {ok, Region} = application:get_env(?APP, aws_region),
             {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
             {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
             {ok, Namespace} = application:get_env(?APP, namespace),
+            Profile = list_to_atom( os:getenv( "PROFILE", "default" ) ),
             AWSConfig = case has_config_credentials(AccessKeyID, SecretAccessKey) of
                 true ->
                     lager:info("AWS credentials configured"),
