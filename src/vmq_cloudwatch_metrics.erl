@@ -100,6 +100,7 @@ init([]) ->
         false ->
             undefined
     end,
+    lager:info("The AWS config is: ~p", [AWSConfig]),
     case AWSConfig of
         undefined ->
             {ok, #state{}};
