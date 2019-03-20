@@ -8,8 +8,8 @@
   {git,"https://github.com/kyorai/cuttlefish.git",
        {ref,"649cda2828ef939126a20faa5d0ee0a2ab69f9a6"}},
   0},
- {<<"eini">>,{pkg,<<"eini">>,<<"1.2.5">>},1},
- {<<"erlcloud">>,{pkg,<<"erlcloud">>,<<"3.2.4">>},0},
+ {<<"eini">>,{pkg,<<"eini">>,<<"1.2.6">>},1},
+ {<<"erlcloud">>,{pkg,<<"erlcloud">>,<<"3.2.6">>},0},
  {<<"getopt">>,{pkg,<<"getopt">>,<<"0.8.2">>},1},
  {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.8">>},1},
  {<<"jsx">>,{pkg,<<"jsx">>,<<"2.9.0">>},1},
@@ -18,8 +18,8 @@
 [
 {pkg_hash,[
  {<<"base16">>, <<"283644E2B21BD5915ACB7178BED7851FB07C6E5749B8FAD68A53C501092176D9">>},
- {<<"eini">>, <<"98E4988474FAAF821E3511579090AF989096ADBDB5F7BFAA03AA0A9AC80296B2">>},
- {<<"erlcloud">>, <<"60DD8AE896D0B98D27198854F63A9E96FA0669B1B18E521BC9754802B2863DC1">>},
+ {<<"eini">>, <<"DFFA48476FD89FB6E41CEEA0ADFA1BC6E7862CCD6584417442F8BB37E5D34715">>},
+ {<<"erlcloud">>, <<"C4E13385C57226F5D893883FE9DBA641876CCA7EEA28174FCEA58DAB49F3BA55">>},
  {<<"getopt">>, <<"B17556DB683000BA50370B16C0619DF1337E7AF7ECBF7D64FBF8D1D6BCE3109B">>},
  {<<"goldrush">>, <<"2024BA375CEEA47E27EA70E14D2C483B2D8610101B4E852EF7F89163CDB6E649">>},
  {<<"jsx">>, <<"D2F6E5F069C00266CAD52FB15D87C428579EA4D7D73A33669E12679E203329DD">>},
