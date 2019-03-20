@@ -299,7 +299,6 @@ has_config_credentials(undefined, undefined) ->
     false;
 has_config_credentials(AccessKeyID, SecretAccessKey) when
 is_list(AccessKeyID), is_list(SecretAccessKey) ->
-    lager:info("AWS CREDS ARE: ~p ~p", [AccessKeyID, SecretAccessKey]),
     case {AccessKeyID, SecretAccessKey} of
         {"", ""} -> false;
         _ -> true
