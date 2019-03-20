@@ -76,33 +76,40 @@ start_link() ->
     {stop, Reason :: term()} | ignore).
 init([]) ->
     {ok, Enabled} = application:get_env(?APP, cloudwatch_enabled),
-    case Enabled of
+    Interval = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
+    {ok, Region} = application:get_env(?APP, aws_region),
+    {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
+    {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
+    {ok, Namespace} = application:get_env(?APP, namespace),
+    Profile = list_to_atom( os:getenv( "PROFILE", "default" ) ),
+    AWSConfig = case Enabled of
         true ->
-            Interval = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
-            {ok, Region} = application:get_env(?APP, aws_region),
-            {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
-            {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
-            {ok, Namespace} = application:get_env(?APP, namespace),
-            Profile = list_to_atom( os:getenv( "PROFILE", "default" ) ),
-            AWSConfig = case has_config_credentials(AccessKeyID, SecretAccessKey) of
+            case has_config_credentials(AccessKeyID, SecretAccessKey) of
                 true ->
                     lager:info("AWS credentials configured"),
                     Conf = erlcloud_mon:new(AccessKeyID, SecretAccessKey),
                     Conf;
                 false ->
-                %% This will attempt to fetch the AWS access key and secret automatically.
-                lager:info("AWS credentials not configured, attempting to get them automatically..."),
-                {ok, Conf} = erlcloud_aws:auto_config([{profile, Profile}]),
-                Conf
-            end,
-            lager:info("The AWS config is: ~p", [AWSConfig]),
+                    %% This will attempt to fetch the AWS access key and secret automatically.
+                    lager:info("AWS credentials not configured, attempting to get them automatically..."),
+                    case erlcloud_aws:auto_config([{profile, Profile}]) of
+                        {ok, Conf} -> Conf;
+                        _Other -> undefined
+                    end
+            end;
+        false ->
+            undefined
+    end,
+    case AWSConfig of
+        undefined ->
+            {ok, #state{}};
+        _ ->
             CloudWatchConfig = erlcloud_aws:service_config(<<"mon">>, Region, AWSConfig),
             schedule_report(Interval),
-            {ok, #state{namespace = Namespace,
-                        config = CloudWatchConfig,
-                        interval = Interval}};
-        false ->
-            {ok, #state{}}
+            State = #state{namespace = Namespace,
+                           config = CloudWatchConfig,
+                           interval = Interval},
+            {ok, State}
     end.
 
 %%--------------------------------------------------------------------
