@@ -105,7 +105,8 @@ init([]) ->
         undefined ->
             {ok, #state{}};
         _ ->
-            CloudWatchConfig = erlcloud_aws:service_config(<<"mon">>, Region, AWSConfig),
+            Cfg = erlcloud_aws:default_region_config(AWSConfig, Region),
+            CloudWatchConfig = erlcloud_aws:service_config(<<"mon">>, Region, Cfg),
             schedule_report(Interval),
             State = #state{namespace = Namespace,
                            config = CloudWatchConfig,
