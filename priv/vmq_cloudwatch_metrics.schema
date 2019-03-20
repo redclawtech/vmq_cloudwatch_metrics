@@ -39,9 +39,3 @@
                                                               {default, "us-east-1"},
                                                               {datatype, string}
                                                             ]}.
-
-%% @doc Set the AWS Profile.
-{mapping, "vmq_cloudwatch_metrics.aws_profile", "vmq_cloudwatch_metrics.aws_profile", [
-                                                              {default, "default"},
-                                                              {datatype, string}
-                                                            ]}.

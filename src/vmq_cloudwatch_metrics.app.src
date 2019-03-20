@@ -16,7 +16,6 @@
      {cloudwatch_enabled, false},
      {interval, 60000},
      {namespace, "VerneMQ"},
-     {aws_profile, "default"},
      {aws_region, "us-east-1"},
      {aws_access_key_id, ""},
      {aws_secret_access_key, ""}

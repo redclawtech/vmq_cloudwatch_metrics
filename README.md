@@ -5,7 +5,7 @@ This is a [VerneMQ](https://vernemq.com/) plugin that will send broker metrics t
 ## Prerequisites
 
 * A recent version of Erlang/OTP(Not tested on versions previous to 19).
-* VerneMQ version *1.4.0* or superior.
+* VerneMQ version *1.7.0* or superior.
 
 ## How to compile this plugin
 

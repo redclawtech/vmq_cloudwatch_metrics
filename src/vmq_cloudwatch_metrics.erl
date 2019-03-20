@@ -75,32 +75,27 @@ start_link() ->
     {ok, State :: state()} | {ok, State :: state(), timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
-    {ok, Enabled} = application:get_env(?APP, cloudwatch_enabled),
     Interval = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
+    {ok, Enabled} = application:get_env(?APP, cloudwatch_enabled),
     {ok, Region} = application:get_env(?APP, aws_region),
     {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
     {ok, SecretAccessKey} = application:get_env(?APP, aws_secret_access_key),
     {ok, Namespace} = application:get_env(?APP, namespace),
-    Profile = list_to_atom( os:getenv( "PROFILE", "default" ) ),
     AWSConfig = case Enabled of
         true ->
             case has_config_credentials(AccessKeyID, SecretAccessKey) of
                 true ->
-                    lager:info("AWS credentials configured"),
+                    lager:info("AWS credentials configured."),
                     Conf = erlcloud_mon:new(AccessKeyID, SecretAccessKey),
                     Conf;
                 false ->
-                    %% This will attempt to fetch the AWS access key and secret automatically.
-                    lager:info("AWS credentials not configured, attempting to get them automatically..."),
-                    case erlcloud_aws:auto_config([{profile, Profile}]) of
-                        {ok, Conf} -> Conf;
-                        _Other -> undefined
-                    end
+                    %% TODO: attempt to fetch the AWS access key and secret automatically.
+                    lager:warning("AWS credentials not configured correctly."),
+                    undefined
             end;
         false ->
             undefined
     end,
-    lager:info("The AWS config is: ~p", [AWSConfig]),
     case AWSConfig of
         undefined ->
             {ok, #state{}};
