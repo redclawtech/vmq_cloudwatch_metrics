@@ -43,9 +43,10 @@
          description :: undefined | binary()}).
 
 -record(state, {
-    namespace  :: string(),     %% The Cloudwatch Metrics namespace.
-    config     :: aws_config(), %% AWS config.
-    interval   :: non_neg_integer()
+    namespace   :: string(),     %% The Cloudwatch Metrics namespace.
+    config      :: aws_config(), %% AWS config.
+    interval    :: non_neg_integer(),
+    node_name   :: string()
 }).
 
 -type state() :: #state{}.
@@ -76,6 +77,7 @@ start_link() ->
     {stop, Reason :: term()} | ignore).
 init([]) ->
     Interval = application:get_env(?APP, interval, ?DEFAULT_INTERVAL),
+    NodeName = application:get_env(?APP, node_name, atom_to_list(node())),
     {ok, Enabled} = application:get_env(?APP, cloudwatch_enabled),
     {ok, Region} = application:get_env(?APP, aws_region),
     {ok, AccessKeyID} = application:get_env(?APP, aws_access_key_id),
@@ -104,7 +106,8 @@ init([]) ->
             schedule_report(Interval),
             State = #state{namespace = Namespace,
                            config = CloudWatchConfig,
-                           interval = Interval},
+                           interval = Interval,
+                           node_name = NodeName},
             {ok, State}
     end.
 
@@ -148,11 +151,13 @@ handle_cast(_Msg, State) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_info(report, State = #state{namespace = Namespace,
-                                   config = Config, interval = Interval}) ->
+                                   config = Config,
+                                   interval = Interval,
+                                   node_name = NodeName}) ->
     lager:debug("Sending metrics to cloudwatch."),
     ServerMetrics = vmq_metrics:metrics(#{aggregate => false}),
     %% Metrics come in chunks of 20 items due to AWS limitation.
-    Metrics = build_metric_datum(ServerMetrics, []),
+    Metrics = build_metric_datum(NodeName, ServerMetrics, []),
     lists:foreach(
         fun(Chunk) ->
             erlcloud_mon:put_metric_data(Namespace, Chunk, Config)
@@ -201,17 +206,17 @@ code_change(_OldVsn, State, _Extra) ->
 %% APIReference/API_MetricDatum.html
 %% @end
 %%--------------------------------------------------------------------
-build_metric_datum([{#metric_def{type=Type, name=Name}, Val} | Metrics], Acc) ->
+build_metric_datum(NodeName, [{#metric_def{type=Type, name=Name}, Val} | Metrics], Acc) ->
         Metric = #metric_datum{
             metric_name = atom_to_list(Name),
             dimensions  = [
-                #dimension{name = "node", value = atom_to_list(node())}
+                #dimension{name = "node", value = NodeName}
             ],
             unit = unit({Type, Name}),
             value = value(Val)
         },
-        build_metric_datum(Metrics, [Metric|Acc]);
-build_metric_datum([], Acc) ->
+        build_metric_datum(NodeName, Metrics, [Metric|Acc]);
+build_metric_datum(_NodeName, [], Acc) ->
     %% Split the metrics in sublists due to CloudWatch `PutMetricData`
     %% limitation of 20 metrics per call.
     %% https://docs.aws.amazon.com/AmazonCloudWatch/latest/

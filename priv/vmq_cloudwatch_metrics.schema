@@ -39,3 +39,8 @@
                                                               {default, "us-east-1"},
                                                               {datatype, string}
                                                             ]}.
+
+%% @doc Override node name. Hack for docker changing container ips on Elastic beanstalk.
+{mapping, "vmq_cloudwatch_metrics.node_name", "vmq_cloudwatch_metrics.node_name", [
+                                                              {datatype, string}
+                                                          ]}.
